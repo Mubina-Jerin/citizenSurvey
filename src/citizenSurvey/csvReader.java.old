@@ -1,0 +1,122 @@
+package citizenSurvey;
+
+import au.com.bytecode.opencsv.*;
+
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+
+
+public class csvReader {
+
+	
+	
+	
+	private static final String csvFilePath = "C:\\Users\\Mubina Jerin\\Downloads\\citizenSurvey\\surveySample.csv";
+
+    public static void main(String[] args) throws IOException {
+    	
+    	try {
+    		
+    		 Reader readerObject = Files.newBufferedReader(Paths.get(csvFilePath));
+             CSVReader csvReader = new CSVReader(readerObject);
+             
+             String[] currentLine;
+             
+             List<String> keyNames= new ArrayList<String>();
+             
+             HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+             int i=0;
+             int j=0;
+             int n=0;
+            
+             while ((currentLine = csvReader.readNext()) != null) {
+            	 
+            	 if(i==0) {
+            		 for (n=0;n<currentLine.length;n++) {
+                		 keyNames.add(currentLine[n]);
+                	 }
+            	 }
+            	 else {
+            	     for(String key:keyNames) {
+            	    	
+            	    	 if(j==0) {
+            	    		map.put(key, new ArrayList<String>());
+            	    	    map.get(key).add(currentLine[keyNames.indexOf(key)]);
+            	    	    
+            	    	  }
+            	    	 else {
+            	    		 
+            	    		map.get(key).add(currentLine[keyNames.indexOf(key)]);
+            	    	 }
+            	     }
+            	     j++;
+            	  }
+            	 i++;
+                              
+              }
+             System.out.println("=========================="+ i);
+             for(Map.Entry<String, List<String>> element:map.entrySet()) {
+            	 
+            	// System.out.print(element.getKey()+":\n");
+            	 
+            	 String listName= "Unique"+ toCamelCase(element.getKey());
+            	 
+            	 //System.out.println(listName);
+            	 HashMap<String,Set> uniquevalueSet=new HashMap<String,Set>();
+            	 uniquevalueSet.put(listName,new HashSet());
+            	 uniquevalueSet.get(listName).addAll(element.getValue());
+            	 
+            	 	for(Map.Entry<String, Set> m:uniquevalueSet.entrySet()) {
+		            	 
+            	 		
+            	 		List<String> uniqueValuelist= new ArrayList<String>(m.getValue());
+            	 		System.out.println("Set Name:\t"+ m.getKey() +"\tValue:\t" + uniqueValuelist.size());
+		            	 for(String value: uniqueValuelist)
+		            	 {
+		                //   System.out.print(value+":\n");
+		            	 }
+            	 	} 	 
+             }          
+          }
+    catch(Exception e) {
+    		System.out.println("Error");
+    		e.printStackTrace();
+    	 }
+ 	
+}
+    
+    
+    public static String toCamelCase(final String value) {
+        if (value == null) {
+            return null;
+        }
+        final StringBuilder newString = new StringBuilder(value.length());
+
+        for (final String singlevalue : value.split(" ")) {
+            
+        if (!singlevalue.isEmpty()) {
+                newString.append(Character.toUpperCase(singlevalue.charAt(0)));
+                newString.append(singlevalue.substring(1).toLowerCase());
+            }
+            if (!(newString.length() == value.length()))
+            	newString.append(" ");
+        }
+
+        return newString.toString();
+    }
+}
